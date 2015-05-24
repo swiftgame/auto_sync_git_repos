@@ -1,0 +1,102 @@
+#/bin/bash
+##AUTHORS: koen-github, swiftgame##
+
+CONFIG_FILE=$1
+
+if [[ $CONFIG_FILE == "" ]]
+then
+echo "ERROR: No config file specified"
+echo "Use this script as: ./auto_sync_git /path/to/config/file"
+echo "Example config file: "
+echo "declare -a CLONE_DIRS=(\"/home/koen/gitTestRepo/alltheclones/clone1/mainGit\" \"/home/koen/gitTestRepo/alltheclones/clone2/mainGit\" \"/home/koen/gitTestRepo/alltheclones/clone3/mainGit\" \"/home/koen/gitTestRepo/alltheclones/clone4/mainGit\")
+declare -a EXT_SERVERS=(\"user@host:git/server/dir/\")
+declare -a MOUNTPOINTS=(\"/mnt/serverMount\")"
+exit 1
+else
+FILE_CONTENTS=`cat $CONFIG_FILE`
+##NOT SAFE, FIND A BETTER WAY TO DO THIS
+eval $FILE_CONTENTS
+
+
+fi
+
+
+
+iterator=0
+
+echo "MOUNTING EXTERNALS SERVERS"
+
+for i in "${EXT_SERVERS[@]}"
+do
+	sudo sshfs $i ${MOUNTPOINTS[$iterator]}
+	EXIT_CODE=`echo $?`
+	   if [[ $EXIT_CODE == 1 ]] #is a mountpoint 
+	    then
+		echo "Couldn't mount server $i to mountpoint ${MOUNTPOINTS[$iterator]}"
+		exit 1
+	    fi
+
+	((iterator++))
+
+done
+
+
+
+#check for mountpoints:
+for i in "${CLONE_DIRS[@]}"
+do
+   MOUNTPOINT=`mountpoint -q $i`
+   EXIT_CODE=`echo $?`
+   
+   if [[ $EXIT_CODE == 0 ]] #is a mountpoint 
+    then
+   	echo "Trying to mount this point"
+	if !( sshfs $USER@$HOST:$SERVER_DIR $i ); then #TODO, REPLACE WITH OWN COMMAND.
+	  echo "Mounting failed!"
+	  exit 1
+	fi
+   fi
+done
+
+
+##Loop through every clone directory
+for i in "${CLONE_DIRS[@]}"
+do
+   cd $i
+echo "=========CURRENT DIRECTORY===== `pwd`"
+   git pull
+   EXIT_CODE=`echo $?`
+   if [[ $EXIT_CODE == 1 ]] 
+   then
+	echo "======================================================="
+	echo "Something went wrong, exiting script. Please check log"
+	echo "FULL REPO DIR: $i"
+	echo "======================================================="
+	exit 1;
+   fi
+   git add . 
+   git commit -m "No Message; autosync"
+   git push
+   echo "Done with $i" 
+   # or do whatever with individual element of the array
+done
+
+##Update every clone one last time, just to be sure.
+for i in "${CLONE_DIRS[@]}"
+do
+   cd $i
+echo "=========CURRENT DIRECTORY===== `pwd`"
+   git pull
+   EXIT_CODE=`echo $?`
+   if [[ $EXIT_CODE == 1 ]] 
+   then
+	echo "Something went wrong, exiting script. Please check log"
+	exit 1;
+   fi
+done
+
+echo "If you're not sure everything is up to date, run this script again. "
+
+
+
+
