@@ -2,27 +2,59 @@
 ##AUTHORS: koen-github, swiftgame##
 
 CONFIG_FILE=$1
-
+COMMIT_TEXT=$2
+EXTERNAL_SERVERS=$3
+VERSION="1.0.0"
 if [[ $CONFIG_FILE == "" ]]
 then
-echo "ERROR: No config file specified"
-echo "Use this script as: ./auto_sync_git /path/to/config/file"
-echo "Example config file: "
-echo "declare -a CLONE_DIRS=(\"/home/koen/gitTestRepo/alltheclones/clone1/mainGit\" \"/home/koen/gitTestRepo/alltheclones/clone2/mainGit\" \"/home/koen/gitTestRepo/alltheclones/clone3/mainGit\" \"/home/koen/gitTestRepo/alltheclones/clone4/mainGit\")
-declare -a EXT_SERVERS=(\"user@host:git/server/dir/\")
-declare -a MOUNTPOINTS=(\"/mnt/serverMount\")"
+echo 'Usage: auto_sync_git [CONFIG_FILE] [GIT_COMMIT_TEXT] [EXTERNAL_SERVER/YES/NO]
+This program can be used to automatically sync git repositories. 
+Use if you do not want any usefull git commit text, and just want to sync all your repos
+
+Note: Config_file must only have root access, or this script can not run
+
+========CONFIG_FILE========
+export MAIN_DIR="/home/koen/gitTestRepo/mainGit"
+declare CLONE_DIRS=("/home/koen/gitTestRepo/alltheclones/clone1/mainGit" "/home/koen/gitTestRepo/alltheclones/clone2/mainGit" "/home/koen/gitTestRepo/alltheclones/clone3/mainGit" "/home/koen/gitTestRepo/alltheclones/clone4/mainGit")
+declare EXT_SERVERS=("user@host:git/server/dir/")
+declare MOUNTPOINTS=("/mnt/serverMount")'
+
+
+
 exit 1
 else
+
+FILE_PERMISSION=`stat -c %A  $CONFIG_FILE`
+FILE_OWNER=`stat -c %U  $CONFIG_FILE`
+if [[ $FILE_OWNER == "root" ]]
+then
+if [[ $FILE_PERMISSION == "-rw-r--r--" ]]
+then
 FILE_CONTENTS=`cat $CONFIG_FILE`
 ##NOT SAFE, FIND A BETTER WAY TO DO THIS
 eval $FILE_CONTENTS
+else
+
+echo "Config file has to the right permission, must been set to: -rw-r--r--"
+exit 1;
+fi
+else
+echo "Config file is not from root"
+exit 1;
+fi
 
 
 fi
 
+echo "GIVEN ARGUMENTS: "
+echo "CONFIG_FILE: $CONFIG_FILE"
+echo "GIT_COMMIT_TEXT: $COMMIT_TEXT"
+echo "EXTERNAL_SERVER: $EXTERNAL_SERVERS"
 
 
 iterator=0
+if [[ $EXTERNAL_SERVERS == "YES" ]]
+then
 
 echo "MOUNTING EXTERNALS SERVERS"
 
@@ -40,7 +72,7 @@ do
 
 done
 
-
+fi
 
 #check for mountpoints:
 for i in "${CLONE_DIRS[@]}"
@@ -75,7 +107,7 @@ echo "=========CURRENT DIRECTORY===== `pwd`"
 	exit 1;
    fi
    git add . 
-   git commit -m "No Message; autosync"
+   git commit -m "$COMMIT_TEXT"
    git push
    echo "Done with $i" 
    # or do whatever with individual element of the array
