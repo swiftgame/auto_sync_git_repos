@@ -1,7 +1,7 @@
 #!/bin/bash
 ##AUTHORS: koen-github, swiftgame##
 
-# swiftgame@&y2015.06.13.20:14:40&: MAIN_DIR can probably be deleted, clones know what the main git repo dir is.
+# swiftgame@&y2015.06.13.20:14:40&: MAIN_DIR can probably be deleted, clones know what the main git repo dir is. Indeed
 
 CONFIG_FILE=$1
 COMMIT_TEXT=$2
@@ -16,12 +16,8 @@ Use if you do not want any useful git commit text, and just want to sync all you
 Note: Config_file must only have root access, or this script can not run
 
 ========EXAMPLE CONFIG_FILE========
-export MAIN_DIR="/home/koen/gitTestRepo/mainGit"
 declare CLONE_DIRS=("/home/koen/gitTestRepo/alltheclones/clone1/mainGit" "/home/koen/gitTestRepo/alltheclones/clone2/mainGit" "/home/koen/gitTestRepo/alltheclones/clone3/mainGit" "/home/koen/gitTestRepo/alltheclones/clone4/mainGit")
-declare EXT_SERVERS=("user@host:git/server/dir/")
-declare MOUNTPOINTS=("/mnt/serverMount")'
-
-
+declare EXT_SERVERS=("user@host:git/server/dir/" "/mnt/serverMount" "user1@host1:git/server/dir/" "/mnt/serverMount1")'
 
 exit 1
 else
@@ -31,14 +27,14 @@ FILE_OWNER=`stat -c %U  $CONFIG_FILE`
 
 if [[ $FILE_OWNER == "root" ]]
 then
-   if [[ $FILE_PERMISSION == "-rw-r--r--" ]]
+   if [[ $FILE_PERMISSION == "-rw-rw-r--" ]]
    then
       FILE_CONTENTS=`cat $CONFIG_FILE`
       ##NOT SAFE, FIND A BETTER WAY TO DO THIS
       eval $FILE_CONTENTS
       else
 
-      echo "Config file has to the right permission, must been set to: -rw-r--r--"
+      echo "Config file does not have right permission, must been set to: -rw-rw-r--"
       exit 1;
       fi
       else
@@ -59,37 +55,17 @@ then
 
 echo "MOUNTING EXTERNALS SERVERS"
 
-for i in "${EXT_SERVERS[@]}"
-do
-   sudo sshfs $i ${MOUNTPOINTS[$iterator]}
+for ((i=0; i<${#EXT_SERVERS[@]}; i+=2)); do
+   sudo sshfs ${EXT_SERVERS[i]} ${EXT_SERVERS[i+1]}
    EXIT_CODE=`echo $?`
-      if [[ $EXIT_CODE == 1 ]] #is a mountpoint 
-      then
-         echo "Couldn't mount server $i to mountpoint ${MOUNTPOINTS[$iterator]}"
-	 exit 1
-      fi
-
-      ((iterator++))
-done
-
-fi
-
-#check for mountpoints:
-for i in "${CLONE_DIRS[@]}"
-do
-   MOUNTPOINT=`mountpoint -q $i`
-   EXIT_CODE=`echo $?`
-   
-   if [[ $EXIT_CODE == 0 ]] #is a mountpoint 
+   if [[ $EXIT_CODE == 1 ]] #is a mountpoint 
     then
-   	echo "Trying to mount this point"
-	if !( sshfs $USER@$HOST:$SERVER_DIR $i ); then #TODO, REPLACE WITH OWN COMMAND.
-	  echo "Mounting failed!"
-	  exit 1
-	fi
+     echo "Couldn't mount server ${EXT_SERVERS[i]} to mountpoint ${EXT_SERVERS[i+1]}"
+	exit 1
    fi
 done
 
+fi
 
 ##Loop through every clone directory
 for i in "${CLONE_DIRS[@]}"
@@ -129,6 +105,6 @@ done
 
 echo "If you're not sure everything is up to date, run this script again. "
 
-
+exit 0; #exit if everything went well
 
 
