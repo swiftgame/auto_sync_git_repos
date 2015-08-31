@@ -24,21 +24,22 @@ else
 
 FILE_PERMISSION=`stat -c %A  $CONFIG_FILE`
 FILE_OWNER=`stat -c %U  $CONFIG_FILE`
+USER=`whoami`
 
-if [[ $FILE_OWNER == "root" ]]
+if [[ $FILE_OWNER == "$USER" ]]
 then
-   if [[ $FILE_PERMISSION == "-rw-rw-r--" ]]
+   if [[ $FILE_PERMISSION == "-rw-r--r--" ]]
    then
       FILE_CONTENTS=`cat $CONFIG_FILE`
       ##NOT SAFE, FIND A BETTER WAY TO DO THIS
       eval $FILE_CONTENTS
       else
 
-      echo "Config file does not have right permission, must been set to: -rw-rw-r--"
+      echo "Config file does not have right permission, must been set to: -rw-r--r--, or just use chmod 644 to config file"
       exit 1;
       fi
       else
-      echo "Config file is not from root"
+      echo "Config file is not from the user running this script"
       exit 1;
    fi
 fi
