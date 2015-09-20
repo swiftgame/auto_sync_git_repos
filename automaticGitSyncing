@@ -66,12 +66,10 @@ for ((i=0; i<${#EXT_SERVERS[@]}; i+=2)); do
    fi
 done
 
-
-
 fi
 
 if [ -z "$CLONE_DIRS" ]; then
-echo "You have to set the Clone dirs"
+echo "You have to set the Clone dirs, even if they are the same as the mountpoints."
 exit 1;
 fi
 
