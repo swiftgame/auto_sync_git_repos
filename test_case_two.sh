@@ -8,8 +8,18 @@ read SSHFS_SERVERS
 echo "Now specify all the mount points in the same order as the servers, seperated by , without spaces: "
 
 read MOUNT_POINTS
+echo "declare CLONE_DIRS=(" > test_case_two_config_file
 
-echo "declare EXT_SERVERS=(" > test_case_two_config_file
+mountpoints=$(echo $MOUNT_POINTS | tr "," "\n")
+
+for x in $mountpoints
+do
+echo "\"$x\" " >> test_case_two_config_file
+done
+echo ")" >> test_case_two_config_file
+
+
+echo "declare EXT_SERVERS=(" >> test_case_two_config_file
 
 sshfsservers=$(echo $SSHFS_SERVERS | tr "," "\n")
 arrIN=(${MOUNT_POINTS//,/ })

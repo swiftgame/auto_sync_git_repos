@@ -13,7 +13,7 @@ echo 'Usage: auto_sync_git [CONFIG_FILE] [GIT_COMMIT_TEXT] [MOUNT_EXTERNAL_SERVE
 This program can be used to automatically sync git repositories. 
 Use if you do not want any useful git commit text, and just want to sync all your repos.
 
-Note: Config_file must only have root access, or this script can not run
+Note: Config_file must only have runnable user access, or this script can not run
 
 ========EXAMPLE CONFIG_FILE========
 declare CLONE_DIRS=("/home/koen/gitTestRepo/alltheclones/clone1/mainGit" "/home/koen/gitTestRepo/alltheclones/clone2/mainGit" "/home/koen/gitTestRepo/alltheclones/clone3/mainGit" "/home/koen/gitTestRepo/alltheclones/clone4/mainGit")
@@ -66,6 +66,13 @@ for ((i=0; i<${#EXT_SERVERS[@]}; i+=2)); do
    fi
 done
 
+
+
+fi
+
+if [ -z "$CLONE_DIRS" ]; then
+echo "You have to set the Clone dirs"
+exit 1;
 fi
 
 ##Loop through every clone directory

@@ -1,4 +1,8 @@
+declare CLONE_DIRS=(
+"/user1" 
+"/user2" 
+)
 declare EXT_SERVERS=(
-"user1@host.com" "/home/user1"
-"user2@host.com" "/home/user2"
+"user1@host.com" "/user1"
+"user2@host.com" "/user2"
 )
