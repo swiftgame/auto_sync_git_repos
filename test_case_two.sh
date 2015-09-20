@@ -12,15 +12,12 @@ read MOUNT_POINTS
 echo "declare EXT_SERVERS=(" > test_case_two_config_file
 
 sshfsservers=$(echo $SSHFS_SERVERS | tr "," "\n")
-mountpoints=$(echo $MOUNT_POINTS | tr "," "\n")
+arrIN=(${MOUNT_POINTS//,/ })
 iterator="0"
 
 for x in $sshfsservers
 do
-	echo "\"$x\"" >> test_case_two_config_file
-echo "\"" >> test_case_two_config_file
-	echo ${mountpoints[$iterator]} >> test_case_two_config_file
-echo "\"" >> test_case_two_config_file
+	echo "\"$x\" \""${arrIN[$iterator]}"\"" >> test_case_two_config_file
 ((iterator+=1))
 done
 
