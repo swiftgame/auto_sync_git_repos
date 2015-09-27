@@ -14,6 +14,7 @@ This program can be used to automatically sync git repositories.
 Use if you do not want any useful git commit text, and just want to sync all your repos.
 
 Note: Config_file must only have runnable user access, or this script can not run
+You can generate the config file using test_case_one or two, or just follow this example:
 
 ========EXAMPLE CONFIG_FILE========
 declare CLONE_DIRS=("/home/koen/gitTestRepo/alltheclones/clone1/mainGit" "/home/koen/gitTestRepo/alltheclones/clone2/mainGit" "/home/koen/gitTestRepo/alltheclones/clone3/mainGit" "/home/koen/gitTestRepo/alltheclones/clone4/mainGit")

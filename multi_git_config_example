@@ -1,0 +1,5 @@
+declare CONFIG_FILES=(
+	"/home/koen/auto_sync_git_repos/exampleConfigFile" 
+)
+
+
