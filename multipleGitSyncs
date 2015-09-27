@@ -59,11 +59,12 @@ if [ ! -f automaticGitSyncing ]; then
     echo "Base file automaticGitSyncing not found. Please make sure the file is named correctly or change this script to the right path."
 fi
 
-echo "==========RUNNING AUTO GIT SYNC NOW==============="
+echo "===========RUNNING AUTO GIT SYNC NOW==============="
 for cngfl in "${CONFIG_FILES[@]}"
 do
-	echo "==============CONFIG FILE ONE==================="
-	echo $cngfl
+echo "================CONFIG FILE ONE===================="
+echo $cngfl
+echo "==================================================="
 ./automaticGitSyncing $cngfl $COMMIT_TEXT $MOUNT_EXTERNAL_SERVERS
 
 done
