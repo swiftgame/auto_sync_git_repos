@@ -1,0 +1,61 @@
+#!/bin/bash
+# @project: Automatic Git syncing
+# @author: Koen van der Kruk (koen-github), swiftgame
+# @version: 1.0
+# @repository: https://github.com/swiftgame/auto_sync_git_repos
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+FULL_PATH=`pwd`
+
+echo "Please specify all the remote sshfs clones, seperated by , without spaces: "
+read SSHFS_SERVERS
+
+echo "Now specify all the mount points in the same order as the servers, seperated by , without spaces: "
+read MOUNT_POINTS
+
+echo "Specify the automatic git commit message:"
+read GIT_COMMIT_TEXT
+
+echo "Specify full location to save this config file: "
+read CONFIG_FILE_LOCATION
+
+
+echo "declare CLONE_DIRS=(" > $CONFIG_FILE_LOCATION
+mountpoints=$(echo $MOUNT_POINTS | tr "," "\n")
+
+for x in $mountpoints
+do
+	echo "\"$x\" " >> $CONFIG_FILE_LOCATION
+done
+
+echo ")" >> $CONFIG_FILE_LOCATION
+echo "declare EXT_SERVERS=(" >> $CONFIG_FILE_LOCATION
+
+sshfsservers=$(echo $SSHFS_SERVERS | tr "," "\n")
+arrIN=(${MOUNT_POINTS//,/ })
+iterator="0"
+
+for x in $sshfsservers
+do
+	echo "\"$x\" \""${arrIN[$iterator]}"\"" >> $CONFIG_FILE_LOCATION
+	((iterator+=1))
+done
+
+echo ")" >> $CONFIG_FILE_LOCATION
+chmod 644 $CONFIG_FILE_LOCATION
+
+echo "Run git sync script with this command:
+./git-syncing $CONFIG_FILE_LOCATION $GIT_COMMIT_TEXT YES
+
+"

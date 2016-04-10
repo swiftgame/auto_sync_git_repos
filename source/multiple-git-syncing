@@ -1,0 +1,89 @@
+#!/bin/bash
+# @project: Automatic Git syncing
+# @author: Koen van der Kruk, swiftgame
+# @version: 1.0
+# @repository: https://github.com/swiftgame/auto_sync_git_repos
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+CONFIG_FILE=$1
+COMMIT_TEXT=$2
+MOUNT_EXTERNAL_SERVERS=$3
+USER=`whoami`
+
+if [[ $CONFIG_FILE == "" ]]
+then
+	echo "This script will call automaticGitSyncing multiple times with different configuration files. "
+	echo "Run this script like this: [CONFIG_FILES] [GIT_COMMIT_TEXT] [MOUNT_EXTERNAL_SERVERS/YES/NO]"
+	echo "[CONFIG_FILES] contains a list of paths to all the other configuration files"
+	echo "Example for [CONFIG_FILES]"
+	echo "
+
+	declare CONFIG_FILES=(
+		\"/home/koen/auto_sync_git/configFile1\"
+		\"/home/koen/auto_sync_git/configFile2\"
+		\"/home/koen/auto_sync_git/configFile3\"
+		\"/home/koen/auto_sync_git/configFile4\"
+	)
+	"
+	exit 1
+else
+	FILE_PERMISSION=`stat -c %A  $CONFIG_FILE`
+	FILE_OWNER=`stat -c %U  $CONFIG_FILE`
+
+	if [[ $FILE_OWNER == "$USER" ]]
+	then
+		if [[ $FILE_PERMISSION == "-rw-r--r--" ]]
+		then
+			FILE_CONTENTS=`cat $CONFIG_FILE`
+			eval $FILE_CONTENTS
+		else
+			echo "Config file does not have right permission, must been set to: -rw-r--r--, or just use chmod 644 to config file"
+			exit 1;
+		fi
+		else
+			echo "Config file is not from the user running this script"
+			exit 1;
+	fi
+fi
+
+
+if [ -z "$CONFIG_FILES" ]
+then
+	echo "No CONFIG_FILES variable found in config file, please make sure it's there."
+	exit 1;
+fi
+
+echo "GIVEN ARGUMENTS: "
+echo "CONFIG_FILE: $CONFIG_FILE"
+echo "GIT_COMMIT_TEXT: $COMMIT_TEXT"
+echo "EXTERNAL_SERVER: $MOUNT_EXTERNAL_SERVERS"
+
+if [ ! -f automaticGitSyncing ]
+then
+    echo "Base file automaticGitSyncing not found. Please make sure the file is named correctly or change this script to the right path."
+fi
+
+echo "===========RUNNING AUTO GIT SYNC NOW==============="
+
+for cngfl in "${CONFIG_FILES[@]}"
+do
+	echo "================CONFIG FILE ONE===================="
+	echo $cngfl
+	echo "==================================================="
+	./automaticGitSyncing $cngfl $COMMIT_TEXT $MOUNT_EXTERNAL_SERVERS
+
+done
+
+echo "All config files have been put through automaticGitSyncing, this script will end now."
+exit 0;

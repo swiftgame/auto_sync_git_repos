@@ -1,3 +1,0 @@
-declare CLONE_DIRS=("/home/koen/gitTestRepo/alltheclones/clone1/mainGit" "/home/koen/gitTestRepo/alltheclones/clone2/mainGit" "/home/koen/gitTestRepo/alltheclones/clone3/mainGit" "/home/koen/gitTestRepo/alltheclones/clone4/mainGit")
-declare EXT_SERVERS=("user@host:git/server/dir/" "/mnt/serverMount" "user1@host1:git/server/dir/" "/mnt/serverMount1")
-

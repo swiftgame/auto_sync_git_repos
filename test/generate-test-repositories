@@ -34,13 +34,11 @@ CLONE2_LOCATION=`pwd`
 
 cd ../../../../
 
-echo "declare CLONE_DIRS=(\"$CLONE1_LOCATION\" \"$CLONE2_LOCATION\" )" > test_case_one_config_file
+echo "declare CLONE_DIRS=(\"$CLONE1_LOCATION\" \"$CLONE2_LOCATION\" )" > ../config/test_case_one_config_file
 
-chmod 644 test_case_one_config_file
+chmod 644 ../config/test_case_one_config_file
 
 echo "Run git sync script with this command:
-./automaticGitSyncing test_case_one_config_file NO_COMMENT_GIT_AUTOSYNC NO
+../source/git-syncing ../config/test_case_one_config_file NO_COMMENT_GIT_AUTOSYNC NO
 
 "
-
-
