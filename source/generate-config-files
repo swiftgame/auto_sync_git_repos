@@ -17,12 +17,41 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 FULL_PATH=`pwd`
+SSHFS_SERVERS=""
+MOUNT_POINTS=""
+ANOTHER_ONE="y"
 
-echo "Please specify all the remote sshfs clones, seperated by , without spaces: "
-read SSHFS_SERVERS
 
-echo "Now specify all the mount points in the same order as the servers, seperated by , without spaces: "
-read MOUNT_POINTS
+function ask_for_input(){
+	echo "Enter remote SSHFS location: "
+	read SSHFS_SERVER
+
+	echo "Enter mountpoint where the SSHFS location is mounted on: "
+	read MOUNT_POINT
+
+	SSHFS_SERVERS+="$SSHFS_SERVER,"
+	MOUNT_POINTS+="$MOUNT_POINT,"
+
+	echo "Do you want to add another remote location? (y/n)"
+	read ANOTHER_ONE
+
+	if [[ $ANOTHER_ONE == "y" ]]
+	then
+		ask_for_input
+	fi
+
+	#return $ANOTHER_ONE
+
+}
+
+if [[ $ANOTHER_ONE == "y" ]]
+then
+	ask_for_input
+fi
+
+
+echo $SSHFS_SERVERS
+echo $MOUNT_POINTS
 
 echo "Specify the automatic git commit message:"
 read GIT_COMMIT_TEXT

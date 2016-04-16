@@ -1,0 +1,8 @@
+declare CLONE_DIRS=(
+"/mnt/asdf1" 
+"/mnt/asdf2" 
+)
+declare EXT_SERVERS=(
+"asdf1@asdf.host" "/mnt/asdf1"
+"asdf2@asdf.host" "/mnt/asdf2"
+)
